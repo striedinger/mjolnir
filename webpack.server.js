@@ -5,11 +5,14 @@ const webpackNodeExternals = require('webpack-node-externals');
 
 const config = {
   target: 'node',
+  node: {
+    __dirname: false
+  },
   mode: 'development',
   entry: './src/server/index.js',
   output: {
-    filename: 'server.js',
-    path: path.resolve(__dirname, 'build')
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'build/server')
   },
   externals: [webpackNodeExternals()]
 };

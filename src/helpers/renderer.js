@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import serialize from 'serialize-javascript';
 import App from '../client/components/app';
 
-export default (req, store) => {
+export default (req, assets, store) => {
   const content = renderToString(
     <Provider store={store}>
       <App />
@@ -22,7 +22,8 @@ export default (req, store) => {
       <body>
         <div id="root">${content}</div>
         <script>window.__STATE__ = ${initialState}</script>
-        <script src="bundle.js"></script>
+        <script src="/${assets["vendor.js"]}"></script>
+        <script src="/${assets["main.js"]}"></script>
       </body>
     </html>
   `;
