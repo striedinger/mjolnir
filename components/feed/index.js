@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchStories } from '../../actions';
+import { fetchStories } from '../../store/actions';
 
 const Feed = () => {
   const dispatch = useDispatch();

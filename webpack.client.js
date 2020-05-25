@@ -9,7 +9,7 @@ const env = process.env.NODE_ENV;
 
 const config = {
   mode: env || 'development',
-  entry: './src/client/index.js',
+  entry: './lib/client/index.js',
   output: {
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',

@@ -9,7 +9,7 @@ const config = {
     __dirname: false
   },
   mode: 'development',
-  entry: './src/server/index.js',
+  entry: './lib/server/index.js',
   output: {
     filename: 'index.js',
     path: path.resolve(__dirname, 'build/server')
