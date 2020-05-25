@@ -1,7 +1,7 @@
 {
   "name": "mjolnir",
   "version": "1.0.0",
-  "description": "",
+  "description": "web content renderer",
   "main": "index.js",
   "scripts": {
     "dev": "npm run dev:build & npm run dev:start",
@@ -11,6 +11,9 @@
   "keywords": [],
   "author": "Hugo Striedinger",
   "license": "ISC",
+  "engines": {
+    "node": ">= 10.0.0"
+  },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
     "@babel/core": "^7.9.6",

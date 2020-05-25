@@ -13,7 +13,7 @@ const babelLoader = {
   options: {
     presets: [
       '@babel/react',
-      ['@babel/env', { targets: { browsers: ['last 2 versions'] } }]
+      ['@babel/env', { targets: { browsers: ['last 2 versions'] }, modules: false }]
     ]
   }
 };

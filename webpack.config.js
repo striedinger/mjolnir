@@ -17,7 +17,7 @@ const {
 } = require('./loaders');
 
 const ENV = process.env.NODE_ENV;
-const sourceMap = ENV !== 'production' ? 'source-map' : false;
+const sourceMap = ENV !== 'production' ? 'inline-source-map' : false;
 
 const server = {
   target: 'node',
@@ -28,8 +28,8 @@ const server = {
   devtool: sourceMap,
   entry: './lib/server/index.js',
   output: {
+    path: path.resolve(__dirname, 'build/server'),
     filename: 'index.js',
-    path: path.resolve(__dirname, 'build/server')
   },
   externals: [webpackNodeExternals()],
   plugins: [
@@ -39,6 +39,9 @@ const server = {
       chunkFilename: '[id].[contenthash].css',
     })
   ],
+  optimization: {
+    usedExports: true,
+  },
   module: {
     rules: [
       babelLoader,
@@ -53,9 +56,9 @@ const client = {
   devtool: sourceMap,
   entry: './lib/client/index.js',
   output: {
+    path: path.resolve(__dirname, 'build/static'),
     filename: '[name].[chunkhash].js',
-    chunkFilename: '[name].[chunkhash].js',
-    path: path.resolve(__dirname, 'build/static')
+    chunkFilename: '[name].[chunkhash].js'
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -74,6 +77,7 @@ const client = {
     })
   ],
   optimization: {
+    usedExports: true,
     splitChunks: {
       cacheGroups: {
         vendor: {
