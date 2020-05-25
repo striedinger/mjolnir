@@ -1,34 +1,30 @@
 const path = require('path');
+const webpack = require('webpack');
 // Externals
 const webpackNodeExternals = require('webpack-node-externals');
 // Plugins
-const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 const ManifestPlugin = require('webpack-manifest-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+// Loaders
+const {
+  babelLoader,
+  cssLoaderServer,
+  cssModuleLoaderServer,
+  cssLoaderClient,
+  cssModuleLoaderClient
+} = require('./loaders');
 
-const env = process.env.NODE_ENV;
-
-const babelLoader = {
-  test: /\.js?$/,
-  loader: 'babel-loader',
-  exclude: /node_modules/,
-  options: {
-    presets: [
-      '@babel/react',
-      ['@babel/env', { targets: { browsers: ['last 2 versions'] } }]
-    ]
-  }
-};
-
-const sourceMap = env !== 'production' ? 'source-map' : false;
+const ENV = process.env.NODE_ENV;
+const sourceMap = ENV !== 'production' ? 'source-map' : false;
 
 const server = {
   target: 'node',
   node: {
     __dirname: false
   },
-  mode: env || 'development',
+  mode: ENV || 'development',
   devtool: sourceMap,
   entry: './lib/server/index.js',
   output: {
@@ -36,15 +32,24 @@ const server = {
     path: path.resolve(__dirname, 'build/server')
   },
   externals: [webpackNodeExternals()],
+  plugins: [
+    new CleanWebpackPlugin(),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].[contenthash].css',
+    })
+  ],
   module: {
     rules: [
-      babelLoader
+      babelLoader,
+      cssModuleLoaderServer,
+      cssLoaderServer
     ]
   }
 };
 
 const client = {
-  mode: env || 'development',
+  mode: ENV || 'development',
   devtool: sourceMap,
   entry: './lib/client/index.js',
   output: {
@@ -62,6 +67,10 @@ const client = {
     }),
     new BundleAnalyzerPlugin({
       analyzerMode: 'json'
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
+      chunkFilename: '[id].[contenthash].css',
     })
   ],
   optimization: {
@@ -77,7 +86,9 @@ const client = {
   },
   module: {
     rules: [
-      babelLoader
+      babelLoader,
+      cssModuleLoaderClient,
+      cssLoaderClient
     ]
   }
 };

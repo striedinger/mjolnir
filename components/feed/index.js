@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchStories } from '../../store/actions';
+import styles from './styles.module.css';
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -9,7 +10,7 @@ const Feed = () => {
     dispatch(fetchStories());
   }, []);
   return (
-    <div className="feed">
+    <div className={styles.feed}>
       <h2>Feed</h2>
       {stories.map((story, index) => {
         return <h3 key={index}>{story.title}</h3>
