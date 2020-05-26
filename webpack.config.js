@@ -17,7 +17,9 @@ const {
 } = require('./loaders');
 
 const ENV = process.env.NODE_ENV;
-const sourceMap = ENV !== 'production' ? 'inline-source-map' : false;
+const IS_PRODUCTION = ENV === 'production';
+const SOURCE_MAP = ENV !== 'production' ? 'inline-source-map' : false;
+
 
 const server = {
   target: 'node',
@@ -25,8 +27,8 @@ const server = {
     __dirname: false
   },
   mode: ENV || 'development',
-  devtool: sourceMap,
-  entry: './lib/server/index.js',
+  devtool: SOURCE_MAP,
+  entry: path.resolve(__dirname, 'lib/server/index.js'),
   output: {
     path: path.resolve(__dirname, 'build/server'),
     filename: 'index.js',
@@ -53,8 +55,8 @@ const server = {
 
 const client = {
   mode: ENV || 'development',
-  devtool: sourceMap,
-  entry: './lib/client/index.js',
+  devtool: SOURCE_MAP,
+  entry: path.resolve(__dirname, 'lib/client/index.js'),
   output: {
     path: path.resolve(__dirname, 'build/static'),
     filename: '[name].[chunkhash].js',
