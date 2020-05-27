@@ -1,19 +1,28 @@
+// Returns constructed endpoint to fetch data from
 const resolve = query => {
-  const { param1, param2 } = query;
-  // returns url to fetch data from with app logic
-  return `url`;
+  // const { param1, param2 } = query
+  // const url = `https://endpoint.domain/?param1=param1&param2=param2`;
+  // return url;
+  return 'https://jsonplaceholder.typicode.com/posts';
 };
 
-// Implement own data fetching logic
+// Returns data fetched with custom logic
 const fetch = query => {
-  const data = 'bla'; 
-  // Returns data fetched
-  return data;
+  // const data = await axios.get('endpoint');
+  // return data;
 };
 
-// Transforms data received from resolve/fetch into desired structure
+// Returns transformed data after resolve / fetch
 const transform = (data, query) => {
-  return {}; // transformed data
+  // return Object.keys(data).map(item => {
+  //   return data[item] = `${data[item]}-copy`; 
+  // });
+  return data.map(item => {
+    return {
+      ...item,
+      hello: 'world'
+    };
+  });
 };
 
 // params specify the different params in query, mostly for GUI
