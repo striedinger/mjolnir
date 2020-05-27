@@ -16,10 +16,13 @@ const {
   cssModuleLoaderClient
 } = require('./loaders');
 
+const rootDir = process.env.PWD;
 const ENV = process.env.NODE_ENV;
 const IS_PRODUCTION = ENV === 'production';
 const SOURCE_MAP = ENV !== 'production' ? 'inline-source-map' : false;
-
+const jsFilename = IS_PRODUCTION ? '[name].[chunkhash].js' : '[name].js';
+const cssFilename = IS_PRODUCTION ? '[name].[contenthash].css' : '[name].css';
+const cssChunkFilename = IS_PRODUCTION ? '[id].[name].[contenthash].css' : '[id].[name].css';
 
 const server = {
   target: 'node',
@@ -28,17 +31,18 @@ const server = {
   },
   mode: ENV || 'development',
   devtool: SOURCE_MAP,
-  entry: path.resolve(__dirname, 'lib/server/index.js'),
+  entry: path.resolve(rootDir, 'lib/server/index.js'),
   output: {
-    path: path.resolve(__dirname, 'build/server'),
+    path: path.resolve(rootDir, 'build/server'),
+    publicPath: '',
     filename: 'index.js',
   },
   externals: [webpackNodeExternals()],
   plugins: [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css',
+      filename: cssFilename,
+      chunkFilename: cssChunkFilename,
     })
   ],
   optimization: {
@@ -54,13 +58,19 @@ const server = {
 };
 
 const client = {
+  target: 'web',
   mode: ENV || 'development',
   devtool: SOURCE_MAP,
-  entry: path.resolve(__dirname, 'lib/client/index.js'),
+  entry: [
+    !IS_PRODUCTION && 'react-hot-loader/patch',
+    !IS_PRODUCTION && 'webpack-hot-middleware/client',
+    path.resolve(rootDir, 'lib/client/index.js')
+  ].filter(Boolean),
   output: {
-    path: path.resolve(__dirname, 'build/static'),
-    filename: '[name].[chunkhash].js',
-    chunkFilename: '[name].[chunkhash].js'
+    path: path.resolve(rootDir, 'build/static'),
+    publicPath: '',
+    filename: jsFilename,
+    chunkFilename: jsFilename
   },
   plugins: [
     new CleanWebpackPlugin(),
@@ -74,10 +84,16 @@ const client = {
       analyzerMode: 'json'
     }),
     new MiniCssExtractPlugin({
-      filename: '[name].[contenthash].css',
-      chunkFilename: '[id].[contenthash].css',
-    })
-  ],
+      filename: cssFilename,
+      chunkFilename: cssChunkFilename,
+    }),
+    !IS_PRODUCTION && new webpack.HotModuleReplacementPlugin()
+  ].filter(Boolean),
+  resolve: {
+    alias: {
+      ...(!IS_PRODUCTION && { 'react-dom': '@hot-loader/react-dom' })
+    }
+  },
   optimization: {
     usedExports: true,
     splitChunks: {
@@ -99,5 +115,7 @@ const client = {
   }
 };
 
-
-module.exports = [client, server];
+module.exports = {
+  client,
+  server
+};
