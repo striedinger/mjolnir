@@ -1,4 +1,5 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
@@ -14,6 +15,10 @@ const babelLoader = {
     presets: [
       '@babel/react',
       ['@babel/env', { targets: { browsers: ['last 2 versions'] }, modules: false }]
+    ],
+    cacheDirectory: true,
+    plugins: [
+      'react-hot-loader/babel'
     ]
   }
 };
@@ -47,7 +52,12 @@ const cssLoaderServer = {
 const cssModuleLoaderClient = {
   test: cssModuleRegex,
   use: [
-    MiniCssExtractPlugin.loader,
+    {
+      loader: MiniCssExtractPlugin.loader,
+      options: {
+        hmr: !IS_PRODUCTION
+      }
+    },
     {
       loader: 'css-loader',
       options: {
@@ -68,7 +78,12 @@ const cssLoaderClient = {
   test: cssRegex,
   exclude: cssModuleRegex,
   use: [
-    MiniCssExtractPlugin.loader,
+    {
+      loader: MiniCssExtractPlugin.loader,
+      options: {
+        hmr: !IS_PRODUCTION
+      }
+    },
     'css-loader',
     {
       loader: 'postcss-loader',
