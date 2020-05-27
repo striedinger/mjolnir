@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-unfetch';
 import stories from './sources/stories';
+const TTL = 60;
 const sources = {
   stories
 };
@@ -16,7 +17,7 @@ const contentProvider = async (source, query = {}) => {
   const selectedSource = sources[source];
   // Content source must be registered
   if (!selectedSource) throw new Error('Content source not found');
-  const { resolve, transform } = selectedSource;
+  const { resolve, transform, ttl = TTL } = selectedSource;
   // Check if content source has resolve function
   if (resolve) {
     // Get content source resolve url
@@ -38,13 +39,19 @@ const contentProvider = async (source, query = {}) => {
         if (transform) {
           try {
             const transformedData = transform(data, query);
-            return transformedData;
+            return {
+              data: transformedData,
+              ttl
+            };
           } catch (error) {
             throw new Error(error.message);
           }
         } else {
           // No transform function, return original data
-          return data;
+          return {
+            data,
+            ttl
+          };
         }
       } catch(error) {
         throw new Error(error.message);
