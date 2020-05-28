@@ -15,8 +15,9 @@ const {
   cssLoaderClient,
   cssModuleLoaderClient
 } = require('./loaders');
+// Helpers
+const paths = require('./paths');
 
-const rootDir = process.env.PWD;
 const ENV = process.env.NODE_ENV;
 const IS_PRODUCTION = ENV === 'production';
 const SOURCE_MAP = ENV !== 'production' ? 'inline-source-map' : false;
@@ -31,10 +32,10 @@ const server = {
   },
   mode: ENV || 'development',
   devtool: SOURCE_MAP,
-  entry: path.resolve(rootDir, 'lib/server/index.js'),
+  entry: path.resolve(paths.srcServer, 'index.js'),
   output: {
-    path: path.resolve(rootDir, 'build/server'),
-    publicPath: '',
+    path: paths.serverBuild,
+    publicPath: paths.publicPath,
     filename: 'index.js',
   },
   externals: [webpackNodeExternals()],
@@ -64,11 +65,11 @@ const client = {
   entry: [
     !IS_PRODUCTION && 'react-hot-loader/patch',
     !IS_PRODUCTION && 'webpack-hot-middleware/client',
-    path.resolve(rootDir, 'lib/client/index.js')
+    path.resolve(paths.srcClient, 'index.js')
   ].filter(Boolean),
   output: {
-    path: path.resolve(rootDir, 'build/static'),
-    publicPath: '',
+    path: paths.clientBuild,
+    publicPath: paths.publicPath,
     filename: jsFilename,
     chunkFilename: jsFilename
   },
