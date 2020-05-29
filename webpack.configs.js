@@ -26,6 +26,7 @@ const cssFilename = IS_PRODUCTION ? '[name].[contenthash].css' : '[name].css';
 const cssChunkFilename = IS_PRODUCTION ? '[id].[name].[contenthash].css' : '[id].[name].css';
 
 const server = {
+  name: 'server',
   target: 'node',
   node: {
     __dirname: false
@@ -48,6 +49,22 @@ const server = {
   ],
   optimization: {
     usedExports: true,
+    noEmitOnErrors: true,
+  },
+  stats: {
+    assets: false,
+    cached: false,
+    cachedAssets: false,
+    chunks: false,
+    chunkModules: false,
+    children: false,
+    colors: true,
+    hash: false,
+    modules: false,
+    performance: false,
+    reasons: false,
+    timings: true,
+    version: false,
   },
   module: {
     rules: [
@@ -59,12 +76,12 @@ const server = {
 };
 
 const client = {
+  name: 'client',
   target: 'web',
   mode: ENV || 'development',
   devtool: SOURCE_MAP,
   entry: [
-    !IS_PRODUCTION && 'react-hot-loader/patch',
-    !IS_PRODUCTION && 'webpack-hot-middleware/client',
+    !IS_PRODUCTION && 'webpack-hot-middleware/client?path=http://localhost:3001/__webpack_hmr',
     path.resolve(paths.srcClient, 'index.js')
   ].filter(Boolean),
   output: {
@@ -97,6 +114,7 @@ const client = {
   },
   optimization: {
     usedExports: true,
+    noEmitOnErrors: true,
     splitChunks: {
       cacheGroups: {
         vendor: {
@@ -106,6 +124,19 @@ const client = {
         },
       },
     }
+  },
+  stats: {
+    cached: false,
+    cachedAssets: false,
+    chunks: false,
+    chunkModules: false,
+    children: false,
+    colors: true,
+    hash: false,
+    modules: false,
+    reasons: false,
+    timings: true,
+    version: false,
   },
   module: {
     rules: [

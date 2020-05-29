@@ -10,7 +10,7 @@ const paths = {
   dotEnv: resolveApp('.env'),
   srcClient: resolveApp('lib/client'),
   srcServer: resolveApp('lib/server'),
-  publicPath: '',
+  publicPath: '/'
 };
 
 module.exports = paths;

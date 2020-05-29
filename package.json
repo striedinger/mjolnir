@@ -4,6 +4,7 @@
   "description": "web content renderer",
   "main": "index.js",
   "scripts": {
+    "test": "node scripts/dev",
     "dev": "npm run dev:build && npm run dev:start",
     "dev:start": "node build/server/index.js",
     "dev:build": "npm run dev:build-client && npm run dev:build-server",
