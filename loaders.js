@@ -16,7 +16,6 @@ const babelLoader = {
       '@babel/react',
       ['@babel/env', { targets: { browsers: ['last 2 versions'] }, modules: false }]
     ],
-    cacheDirectory: true,
     plugins: [
       'react-hot-loader/babel'
     ]
