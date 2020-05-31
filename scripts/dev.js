@@ -41,14 +41,14 @@ const start = async () => {
       return;
     }
     if (error) {
-      console.log(error);
+      console.error(error);
     }
     if (stats.hasErrors()) {
       const info = stats.toJson();
       const errors = info.errors[0].split('\n');
-      console.log(errors[0]);
-      console.log(errors[1]);
-      console.log(errors[2]);
+      console.error(errors[0]);
+      console.error(errors[1]);
+      console.error(errors[2]);
     }
   });
 
@@ -56,7 +56,7 @@ const start = async () => {
     await serverPromise;
     await clientPromise;
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 
   const script = nodemon({
@@ -75,7 +75,7 @@ const start = async () => {
   });
 
   script.on('error', () => {
-    console.log('an error occurred, exiting');
+    console.warn('an error occurred, exiting');
     process.exit(1);
   });
 };
