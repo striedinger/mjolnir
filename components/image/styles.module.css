@@ -1,0 +1,16 @@
+.image {
+  display: block;
+}
+
+:global(.loaded):not(:global(.error)).image {
+  animation: loaded 300ms ease-in-out;
+}
+
+@keyframes loaded {
+  0% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
