@@ -1,8 +1,10 @@
 import fetch from 'isomorphic-unfetch';
 import stories from './sources/stories';
+import mock404 from './sources/mock404';
 const TTL = 60;
 const sources = {
-  stories
+  stories,
+  mock404
 };
 
 const isValidUrl = string => {
@@ -11,12 +13,12 @@ const isValidUrl = string => {
   return false;
 };
 
-const contentProvider = async (source, query = {}) => {
+const contentProvider = async (source, query) => {
   // Must provide content source type
   if (!source) throw new Error('Content source is required');
   const selectedSource = sources[source];
   // Content source must be registered
-  if (!selectedSource) throw new Error('Content source not found');
+  if (!selectedSource) throw new Error(`Content source not found: ${source}`);
   const { resolve, transform, ttl = TTL } = selectedSource;
   // Check if content source has resolve function
   if (resolve) {
@@ -40,6 +42,8 @@ const contentProvider = async (source, query = {}) => {
           try {
             const transformedData = transform(data, query);
             return {
+              type: source,
+              query,
               data: transformedData,
               ttl
             };
@@ -49,6 +53,8 @@ const contentProvider = async (source, query = {}) => {
         } else {
           // No transform function, return original data
           return {
+            type: source,
+            query,
             data,
             ttl
           };
