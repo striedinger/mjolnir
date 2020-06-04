@@ -13,6 +13,38 @@ const isValidUrl = string => {
   return false;
 };
 
+const resolveSource = async (resolve, query) => {
+  // Get content source resolve url
+  const endpoint = resolve(query);
+  if (isValidUrl(endpoint)) {
+    // Fetch data with resolve url
+    const response = await fetch(endpoint);
+    // If response is not 200, throw error with corresponding http status
+    if (!response.ok) {
+      const error = new Error(`${response.status} ${response.statusText}`);
+      error.status = response.status;
+      throw error;
+    };
+    try {
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw new Error(error.message);
+    }
+  } else {
+    throw new Error(`Content source resolve does not provide valid url`);
+  }
+};
+
+const transformData = (transform, data, query) => {
+  try {
+    const transformedData = transform(data, query);
+    return transformedData;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
 const contentProvider = async (source, query) => {
   // Must provide content source type
   if (!source) throw new Error('Content source is required');
@@ -20,52 +52,15 @@ const contentProvider = async (source, query) => {
   // Content source must be registered
   if (!selectedSource) throw new Error(`Content source not found: ${source}`);
   const { resolve, transform, ttl = TTL } = selectedSource;
-  // Check if content source has resolve function
-  if (resolve) {
-    // Get content source resolve url
-    const endpoint = resolve(query);
-    // Validate url
-    if (isValidUrl(endpoint)) {
-      // Fetch data with resolve url
-      const response = await fetch(endpoint);
-      // If response is not 200, throw error with corresponding http status
-      if (!response.ok) {
-        const error = new Error(`${response.status} ${response.statusText}`);
-        error.status = response.status;
-        throw error;
-      };
-      try {
-        // Extract json from response
-        const data = await response.json();
-        // If transform function was provided, try to apply to data and return
-        if (transform) {
-          try {
-            const transformedData = transform(data, query);
-            return {
-              type: source,
-              query,
-              data: transformedData,
-              ttl
-            };
-          } catch (error) {
-            throw new Error(error.message);
-          }
-        } else {
-          // No transform function, return original data
-          return {
-            type: source,
-            query,
-            data,
-            ttl
-          };
-        }
-      } catch(error) {
-        throw new Error(error.message);
-      }
-    }
-    throw new Error('Content source resolve does not provide valid url');
-  }
-  throw new Error('Content source does not have resolve defined');
+  const data = resolve && await resolveSource(resolve, query);
+  if (!data) throw new Error('Content source does not resolve to valid data');
+  const transformedData = transform && transformData(transform, data, query);
+  return {
+    type: source,
+    query,
+    data: transformedData || data,
+    ttl
+  };
 };
 
 export default contentProvider;
