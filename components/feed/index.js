@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import styles from './styles.module.css';
+import useContent from '../../lib/shared/content';
 
 const Feed = () => {
   const [count, setCount] = useState(0);
+  const stories = useContent('stories', {});
+  console.log(stories);
   return (
     <div className={styles.feed}>
       <h2>Feed</h2>
