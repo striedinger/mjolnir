@@ -27,7 +27,7 @@ const transform = (data, query) => {
 
 // params specify the different params in query, mostly for GUI
 const params = {
-  param1: 'text',
+  param1: 'string',
   param2: 'number'
 };
 

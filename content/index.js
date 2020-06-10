@@ -1,14 +1,16 @@
 import fetch from 'isomorphic-unfetch';
 import serialize from 'serialize-javascript';
 import stories from './sources/stories';
+import story from './sources/story';
 import mock404 from './sources/mock404';
 const TTL = 60;
 const sources = {
   stories,
+  story,
   mock404
 };
 
-const cache = {};
+export const contentCache = {};
 
 const isValidUrl = string => {
   const regEx = /^(?:(?:https?|ftp):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?$/;
@@ -31,8 +33,8 @@ const resolveSource = async ({ source, resolve, query }) => {
     try {
       const data = await response.json();
       // Store data in cache. TODO: setting data expiration and lastModified
-      if (!cache[source]) cache[source] = {};
-      cache[source][serialize(query)] = data;
+      const sourceCache = contentCache[source] = contentCache[source] || {};
+      sourceCache[serialize(query)] = data;
       return data;
     } catch (error) {
       throw new Error(error.message);
@@ -60,7 +62,7 @@ const contentProvider = (source, query) => {
   const { resolve, transform, ttl = TTL } = selectedSource;
   if (!resolve || typeof resolve !== 'function') throw new Error(`Content source has no resolve method`);
   // TODO: transform implementation
-  const sourceCache = cache[source] || {};
+  const sourceCache = contentCache[source] || {};
   return {
     type: source,
     query,
