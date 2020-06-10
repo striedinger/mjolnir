@@ -16,7 +16,7 @@ export default {
     },
     'container-1': {
       id: 'container-1',
-      children: ['story-1', 'story-2'],
+      children: ['banner-1', 'story-1', 'story-2'],
       hasChildren: true,
       isExpanded: true,
       component: {
@@ -30,6 +30,13 @@ export default {
       isExpanded: true,
       component: {
         type: 'container'
+      }
+    },
+    'banner-1': {
+      id: 'banner-1',
+      children: [],
+      component: {
+        type: 'banner'
       }
     },
     'story-1': {

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import styles from './styles.module.css';
 import useContent from '../../lib/shared/content';
+import useGlobalContent from '../../lib/shared/globalContent';
+import AppContext from '../../context';
 
 const Story = props => {
   const { options: { id } } = props;
