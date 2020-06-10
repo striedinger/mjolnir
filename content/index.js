@@ -2,11 +2,13 @@ import fetch from 'isomorphic-unfetch';
 import serialize from 'serialize-javascript';
 import stories from './sources/stories';
 import story from './sources/story';
+import users from './sources/users';
 import mock404 from './sources/mock404';
 const TTL = 60;
 const sources = {
   stories,
   story,
+  users,
   mock404
 };
 
