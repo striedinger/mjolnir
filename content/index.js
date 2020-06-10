@@ -1,4 +1,5 @@
 import fetch from 'isomorphic-unfetch';
+import serialize from 'serialize-javascript';
 import stories from './sources/stories';
 import mock404 from './sources/mock404';
 const TTL = 60;
@@ -21,7 +22,7 @@ const resolveSource = async ({ source, resolve, query }) => {
   if (isValidUrl(endpoint)) {
     // Fetch data with resolve url
     const response = await fetch(endpoint);
-    // If response is not 200, throw error with corresponding http status
+    // If response is not ok, throw error with corresponding http status
     if (!response.ok) {
       const error = new Error(`${response.status} ${response.statusText}`);
       error.status = response.status;
@@ -29,7 +30,9 @@ const resolveSource = async ({ source, resolve, query }) => {
     };
     try {
       const data = await response.json();
-      cache[`${source}-${JSON.stringify(query)}`] = data;
+      // Store data in cache. TODO: setting data expiration and lastModified
+      if (!cache[source]) cache[source] = {};
+      cache[source][serialize(query)] = data;
       return data;
     } catch (error) {
       throw new Error(error.message);
@@ -57,11 +60,12 @@ const contentProvider = (source, query) => {
   const { resolve, transform, ttl = TTL } = selectedSource;
   if (!resolve || typeof resolve !== 'function') throw new Error(`Content source has no resolve method`);
   // TODO: transform implementation
+  const sourceCache = cache[source] || {};
   return {
     type: source,
     query,
     fetched: resolveSource({ source, resolve, query }),
-    cached: cache[`${source}-${JSON.stringify(query)}`],
+    cached: sourceCache[serialize(query)],
     ttl
   };
 };
