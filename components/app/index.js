@@ -6,13 +6,13 @@ const App = props => {
   const { page } = props;
 
   return (
-    <div className="app">
+    <React.Fragment>
       <Helmet>
         <title>Mjolnir App</title>
         <meta property="og:title" content="Mjolnir App" />
       </Helmet>
       { rendererTree(page.items, page.items['root'].children) }
-    </div>
+    </React.Fragment>
   );
 };
 
