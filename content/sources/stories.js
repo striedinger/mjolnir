@@ -13,9 +13,10 @@ const fetch = query => {
 };
 
 // Returns transformed data after resolve / fetch
+// NO resource blocking calls here, only data manipulation
 const transform = (data, query) => {
   // return Object.keys(data).map(item => {
-  //   return data[item] = `${data[item]}-copy`; 
+  //   return data[item] = `${data[item]}-${query.id}-copy`; 
   // });
   return data.map(item => {
     return {
@@ -24,6 +25,11 @@ const transform = (data, query) => {
     };
   });
 };
+
+// Any options that fetch api accepts
+// const options = {
+//   method: 'GET',
+// };
 
 // params specify the different params in query, mostly for GUI
 const params = {

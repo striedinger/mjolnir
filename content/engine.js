@@ -20,12 +20,12 @@ const isValidUrl = string => {
   return false;
 };
 
-const resolveSource = async ({ source, resolve, query }) => {
+const resolveSource = async ({ source, transform, resolve, query, options }) => {
   // Get content source resolve url
   const endpoint = resolve(query);
   if (isValidUrl(endpoint)) {
     // Fetch data with resolve url
-    const response = await fetch(endpoint);
+    const response = await fetch(endpoint, typeof options === 'object' ? options : {});
     // If response is not ok, throw error with corresponding http status
     if (!response.ok) {
       const error = new Error(`${response.status} ${response.statusText}`);
@@ -34,24 +34,18 @@ const resolveSource = async ({ source, resolve, query }) => {
     };
     try {
       const data = await response.json();
+      // transform data if functon defined
+      const transformedData = typeof transform === 'function' ? transform(data, query) : null;
+      const resolvedData = transformedData || data;
       // Store data in cache. TODO: setting data expiration and lastModified
       const sourceCache = contentCache[source] = contentCache[source] || {};
-      sourceCache[serialize(query)] = data;
-      return data;
+      sourceCache[serialize(query)] = resolvedData;
+      return resolvedData;
     } catch (error) {
       throw new Error(error.message);
     }
   } else {
     throw new Error(`Content source resolve does not provide valid url`);
-  }
-};
-
-const transformData = (transform, data, query) => {
-  try {
-    const transformedData = transform(data, query);
-    return transformedData;
-  } catch (error) {
-    throw new Error(error.message);
   }
 };
 
@@ -61,14 +55,14 @@ const contentProvider = (source, query) => {
   const selectedSource = sources[source];
   // Content source must be registered
   if (!selectedSource) throw new Error(`Content source not found: ${source}`);
-  const { resolve, transform, ttl = TTL } = selectedSource;
+  const { resolve, transform, options, ttl = TTL } = selectedSource;
   if (!resolve || typeof resolve !== 'function') throw new Error(`Content source has no resolve method`);
   // TODO: transform implementation
   const sourceCache = contentCache[source] || {};
   return {
     type: source,
     query,
-    fetched: resolveSource({ source, resolve, query }),
+    fetched: resolveSource({ source, resolve, transform, query, options }),
     cached: sourceCache[serialize(query)],
     ttl
   };
